@@ -62,6 +62,27 @@ async function main() {
         fire('pointerup', 32, 0.77, 0.86)
         return held
     })
+    const plunger = await page.evaluate(async () => {
+        const canvas = document.querySelector('canvas')
+        const rect = canvas.getBoundingClientRect()
+        const fire = (name, pointerId, fx, fy) => canvas.dispatchEvent(new PointerEvent(name, {
+            bubbles: true, pointerId, pointerType: 'touch',
+            clientX: rect.left + rect.width * fx, clientY: rect.top + rect.height * fy,
+        }))
+        fire('pointerdown', 41, 0.91, 0.79)
+        fire('pointermove', 41, 0.91, 0.93)
+        await new Promise((resolve) => setTimeout(resolve, 350))
+        const power = Number(globalThis.__gameState?.plungerPower ?? 0)
+        fire('pointerup', 41, 0.91, 0.93)
+        await new Promise((resolve) => setTimeout(resolve, 500))
+        return {
+            power,
+            launched: globalThis.__gameState?.waitingForLaunch === false,
+            objectiveVisible: typeof globalThis.__gameState?.objective === 'string'
+                && globalThis.__gameState.objective.length > 0,
+        }
+    })
+    await page.screenshot({ path: `${OUT}/flow-game.png` })
     await page.evaluate(() => globalThis.__forceGameOver())
     await page.waitForSelector('[data-state="RESULT"]', { timeout: 5000 })
     states.push(await page.evaluate(() => globalThis.__appState))
@@ -77,10 +98,14 @@ async function main() {
         expectedStates: ['INTRO', 'TITLE', 'GAME', 'RESULT'],
         stateOrder: JSON.stringify(states) === JSON.stringify(['INTRO', 'TITLE', 'GAME', 'RESULT']),
         simultaneousFlippers: bothFlippers,
+        plungerReachedFull: plunger.power === 100,
+        plungerReleased: plunger.launched,
+        objectiveVisible: plunger.objectiveVisible,
         resultRestart: restart,
         errors,
         pass: JSON.stringify(states) === JSON.stringify(['INTRO', 'TITLE', 'GAME', 'RESULT'])
-            && bothFlippers && restart && errors.length === 0,
+            && bothFlippers && plunger.power === 100 && plunger.launched
+            && plunger.objectiveVisible && restart && errors.length === 0,
     }
     writeFileSync(`${OUT}/flow-result.json`, JSON.stringify(result, null, 2))
     console.log(JSON.stringify(result, null, 2))

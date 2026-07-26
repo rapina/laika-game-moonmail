@@ -8,6 +8,7 @@ import {
     hitRamp,
     hitTarget,
     lockBall,
+    plungerPowerForDrag,
     strengthLane,
     tickJob,
     useKickback,
@@ -26,6 +27,13 @@ describe('Moonmail pinball rules', () => {
         expect(awardSkillShot(state, 1)).toBe(true)
         expect(awardSkillShot(state, 2)).toBe(false)
         expect(state.skillShotLane).toBe(1)
+    })
+
+    it('reaches full plunger power at the visible 48px handle travel', () => {
+        expect(plungerPowerForDrag(0)).toBe(0)
+        expect(plungerPowerForDrag(24)).toBe(0.5)
+        expect(plungerPowerForDrag(48)).toBe(1)
+        expect(plungerPowerForDrag(80)).toBe(1)
     })
 
     it('lights the scoop and awards exactly one kickback from the first bank', () => {

@@ -184,9 +184,13 @@ function title() {
 }
 
 function ball() {
-    const b = new Bitmap(8, 8, C.deep)
-    b.fill(C.deep); b.circle(4, 4, 3, C.paper); b.set(2, 2, C.mint); b.set(3, 2, C.paper)
-    b.set(6, 5, C.steel); b.set(5, 6, C.steel); b.set(1, 4, C.steel)
+    const b = new Bitmap(10, 10, C.deep)
+    b.fill(C.deep)
+    b.circle(5, 5, 5, C.teal)
+    b.circle(5, 5, 4, C.gold)
+    b.circle(5, 5, 3, C.paper)
+    b.set(3, 3, C.mint); b.set(4, 3, C.paper)
+    b.set(8, 6, C.steel); b.set(7, 8, C.steel); b.set(2, 7, C.amber)
     return b
 }
 

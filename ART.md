@@ -13,7 +13,7 @@
   `sips`로 무손실 PNG 변환. 외부 생성 모델과 제3자 이미지 자산은 사용하지
   않았다.
 - 원본 캔버스: 플레이필드 `256×448`, 타이틀 키 이미지 `256×448`
-- 스프라이트: 볼 `8×8`, 좌우 플리퍼 `40×12`, 우편 스파크 `12×12`
+- 스프라이트: 볼 `10×10`, 좌우 플리퍼 `40×12`, 우편 스파크 `12×12`
 - 팔레트: `#080b1a`, `#10152b`, `#1d2850`, `#33507a`, `#36b6a2`,
   `#8be0c2`, `#f2a33a`, `#ffd477`, `#e75b55`, `#f2efe2`
 - 후가공: 1px 하이라이트, 2×2 Bayer식 디더, 픽셀 클러스터와 제한 팔레트.
@@ -21,7 +21,9 @@
   `image-rendering: pixelated`만 사용하고 평활 보간하지 않는다.
 - 사용 위치: `public/art/moonmail-table.png`은 실제 게임 전체 플레이필드의
   기계·월면·레일 정체성을 만들며, `public/art/moonmail-title.png`은 INTRO와
-  TITLE 배경, 나머지 PNG는 활성 볼·플리퍼·충돌 이펙트에 사용한다.
+  TITLE 배경, 나머지 PNG는 활성 볼·플리퍼·충돌 이펙트에 사용한다. 재제작
+  패스에서 볼을 10×10 청록/호박 외곽선으로 다시 그리고 런타임 픽셀 잔상과
+  결합해 별과 스파크에서 분리했다.
 - 참고 작품: 플레이 구조는 Bally/Midway `The Addams Family`(1992) 오리지널
   테이블을 기준으로 삼았다. 원작의 로고, 캐릭터, 그래픽, 음원은 복제하거나
   포함하지 않았다.
@@ -30,7 +32,7 @@
     `f3a37caf8fc64a428600664dd35906f745481844473cfb96cdb34ab7c9f4dbae`
   - `moonmail-title.png`:
     `472208ecdfd570b384f80428e3f92ebe2baa912bc3eaf74b007703eaa6fea4e6`
-  - `mail-ball.png`: `f245194b15efc8aba5a1de0bfb9788dc53b29bd0da7de80c7baecb051afe0ff2`
+  - `mail-ball.png`: `10b946c698acb788cea875eda2ce8b08181fa029ad95b791a65b5e595ec9be62`
   - `flipper-left.png`:
     `479b658015a8f26ae85bea0ef65ec1d4b2c9c19076e413d77b442dc33a160c83`
   - `flipper-right.png`:

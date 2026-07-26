@@ -15,6 +15,7 @@ export const SCORE = {
 } as const
 
 export const JOB_ORDER: readonly JobId[] = ['ramps', 'bumpers', 'lanes']
+export const PLUNGER_TRAVEL_PX = 48
 
 export interface MoonmailRulesState {
     score: number
@@ -70,6 +71,10 @@ export function strengthLane(strength: number): LaneId {
     if (strength < 0.34) return 0
     if (strength < 0.67) return 1
     return 2
+}
+
+export function plungerPowerForDrag(dragPx: number): number {
+    return Math.max(0, Math.min(1, dragPx / PLUNGER_TRAVEL_PX))
 }
 
 export function awardSkillShot(state: MoonmailRulesState, lane: LaneId): boolean {

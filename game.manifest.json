@@ -29,8 +29,8 @@
     }
   },
   "session": {
-    "typicalSeconds": 120,
-    "maxSeconds": 210,
+    "typicalSeconds": 100,
+    "maxSeconds": 180,
     "failureBudget": 3
   },
   "display": {

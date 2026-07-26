@@ -12,7 +12,7 @@
 - 세계: 달 뒷면 우편 집하장의 마지막 야간 근무
 - 마지막 장면: 세 개의 우편 볼이 출발 레일을 밝히고 중앙 스쿱의 태양 문장이
   점등되는 Dawn Express 슈퍼 잭팟
-- 한 판 길이: 90~150초, 최대 약 210초
+- 한 판 길이: 70~120초, 최대 약 180초
 - 제외: 캠페인, 업그레이드, 리더보드, 엑스트라 볼, 추가 테이블
 
 1992년 기계식 테이블의 발사→조준→모드→락→멀티볼 구조를 모바일 한 화면에서
@@ -24,7 +24,14 @@
 
 - GDD에서 기준작 핵심 루프, 정확히 세 변경 축, 기능 범위와 네 상태를 먼저
   잠갔다.
-- 구현 및 검증 결과는 최종 실행 뒤 아래에 기록한다.
+- 첫 제작 커밋 `ed1292e`의 sourceHash
+  `d1d0695de8549c45b665f13f6750bd2f8be36c94332cac216d5ac3aab74f176f`를
+  390×844 좌표 입력만 받은 새 플레이어에게 전달했다.
+- 플레이어는 전체 목표, 상태 진입, 플런저와 양쪽 플리퍼를 이해했지만 최대
+  플런저 당김, JOB/LOCK의 다음 타깃, 작은 볼 추적, BALL 1의 긴 체류에서
+  마찰을 겪었다. 실제 관찰은 `production-playtest.json`에 그대로 기록했다.
+- 재제작에서 48px=100% 플런저, 동적 NEXT/JOB/DAWN 안내와 장치 점등,
+  10×10 래스터 볼·픽셀 잔상, `BALL n/3` 표기, 18초 정체 방지를 적용했다.
 
 ## 검증
 
@@ -40,26 +47,28 @@
 
 ### 실행 결과
 
-- `npm test -- --reporter=verbose`: 4개 파일, 23개 테스트 통과. 플런저 3강도,
-  1회 킥백, 작업 시간 초과, 교대 램프, 12범퍼, 3레인→스쿱, 2락→멀티볼,
-  교대 잭팟→슈퍼와 한·영 키 동등성을 확인했다.
+- `npm test -- --reporter=verbose`: 4개 파일, 24개 테스트 통과. 플런저 3강도와
+  화면상 48px=100% 보정, 1회 킥백, 작업 시간 초과, 교대 램프, 12범퍼,
+  3레인→스쿱, 2락→멀티볼, 교대 잭팟→슈퍼와 한·영 키 동등성을 확인했다.
 - `npm run build`: TypeScript와 Vite 프로덕션 빌드 통과.
-- `npm run build:arcade`: 21개 불변 파일, 2,491,018 bytes,
-  JS gzip 319,617 bytes 생성 및 release 검증 통과.
-- `npm run smoke -- 11 90000`: mounted, interaction, finished, result delivery,
+- `npm run build:arcade`: 21개 불변 파일, 2,495,365 bytes,
+  JS gzip 320,775 bytes 생성 및 release 검증 통과.
+- `npm run smoke -- 23 90000`: sourceHash `f52e1b063df7f7c578a8c2a4f1fbe77afc604369e5698105f0116b23fd4402c5`,
+  mounted, interaction, finished, result delivery,
   canvas restart가 모두 true이고 console/page error 0으로 통과했다.
 - `npm run verify:flow`: `INTRO → TITLE → GAME → RESULT` 순서, 두 독립 포인터의
-  동시 플리퍼, 결과 뒤 재시작, 오류 0을 확인했다.
-- `VIEWPORT_OUT=/tmp/moonmail-viewport-2 npm run viewport`: 360×800,
+  동시 플리퍼, 하단 근처 플런저 당김 100%, 발사, 현재 목표 노출, 결과 뒤
+  재시작, 오류 0을 확인했다.
+- `VIEWPORT_OUT=verification npm run viewport`: 360×800,
   390×844, 430×932, 900×760에서 standalone/portal 기하 통과. ko/en 결과
-  오버레이 잘림과 런타임 오류 0을 확인했다.
+  오버레이 잘림과 런타임 오류 0을 확인했고 sourceHash가 최종 소스와 일치한다.
 - 화면 숨김 시 물리와 오디오를 함께 일시정지하고 복귀 시 재개하는
   `visibilitychange` 경로 및 아케이드 `pause/resume/mute/setLocale/restart`
   브리지를 구현했다.
 - 첫 입력 전에는 AudioContext를 만들지 않으며 TITLE의 음소거 값을 런타임에
   전달한다.
-- `production-playtest.json`: 첫 빌드의 DPR 선명도와 자동 검증 플런저 문제를
-  관찰하고 다시 만든 서로 다른 sourceHash를 기록했다.
+- `production-playtest.json`: 첫 제작 커밋의 실제 390×844 좌표 전용 플레이
+  관찰, 구체적 재제작 변경과 서로 다른 첫/최종 sourceHash를 기록했다.
 - Sonatype Guide는 현재 세션 인증 토큰 부재로 자동 평가하지 못했다.
   잠금 파일을 바꾸지 않은 `npm ci`는 성공했으나 npm 자체 감사는 전이 포함
   48건(낮음 15, 보통 5, 높음 24, 치명적 4)을 보고했다. 패키지 업그레이드는

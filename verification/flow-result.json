@@ -1,5 +1,5 @@
 {
-  "sourceHash": "d1d0695de8549c45b665f13f6750bd2f8be36c94332cac216d5ac3aab74f176f",
+  "sourceHash": "f52e1b063df7f7c578a8c2a4f1fbe77afc604369e5698105f0116b23fd4402c5",
   "states": [
     "INTRO",
     "TITLE",
@@ -14,6 +14,9 @@
   ],
   "stateOrder": true,
   "simultaneousFlippers": true,
+  "plungerReachedFull": true,
+  "plungerReleased": true,
+  "objectiveVisible": true,
   "resultRestart": true,
   "errors": [],
   "pass": true

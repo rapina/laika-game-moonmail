@@ -25,6 +25,8 @@ import {
     hitRamp,
     hitTarget,
     lockBall,
+    plungerPowerForDrag,
+    PLUNGER_TRAVEL_PX,
     strengthLane,
     tickJob,
     useKickback,
@@ -49,6 +51,8 @@ interface Ball {
     waiting: boolean
     lane: LaneId
     sprite: Sprite
+    halo: Graphics
+    trail: { x: number; y: number }[]
     contacts: Set<string>
     swallowedUntil: number
 }
@@ -114,6 +118,7 @@ export class MoonmailGame implements GameRuntime {
     private rules: MoonmailRulesState = createRulesState()
     private balls: Ball[] = []
     private ballLayer = new Container()
+    private ballTrailLayer = new Graphics()
     private fxLayer = new Container()
     private lightLayer = new Graphics()
     private hudLayer = new Container()
@@ -126,6 +131,8 @@ export class MoonmailGame implements GameRuntime {
     private localeExplicit = false
     private scoreText: Text | null = null
     private statusText: Text | null = null
+    private objectiveText: Text | null = null
+    private plungerText: Text | null = null
     private messageText: Text | null = null
     private messageUntil = 0
     private plungerPower = 0
@@ -189,7 +196,7 @@ export class MoonmailGame implements GameRuntime {
         const table = new Sprite(tableTexture)
         table.width = W
         table.height = H
-        app.stage.addChild(table, this.lightLayer, this.ballLayer, this.fxLayer, this.hudLayer)
+        app.stage.addChild(table, this.lightLayer, this.ballTrailLayer, this.ballLayer, this.fxLayer, this.hudLayer)
         this.createFlippers(leftTexture, rightTexture)
         this.createHud()
         this.installInput()
@@ -230,14 +237,18 @@ export class MoonmailGame implements GameRuntime {
     }
 
     private createHud(): void {
-        const panel = new Graphics().rect(0, 0, W, 45).fill({ color: 0x080b1a, alpha: 0.88 })
-        panel.rect(0, 44, W, 1).fill(0x36b6a2)
+        const panel = new Graphics().rect(0, 0, W, 58).fill({ color: 0x080b1a, alpha: 0.92 })
+        panel.rect(0, 57, W, 1).fill(0x36b6a2)
         this.hudLayer.addChild(panel)
-        this.scoreText = this.pixelText('', 8, 5, 12, 0xffd477)
-        this.statusText = this.pixelText('', 8, 23, 8, 0x8be0c2)
-        this.messageText = this.pixelText('', W / 2, 48, 11, 0xf2efe2, true)
+        this.scoreText = this.pixelText('', 8, 4, 11, 0xffd477)
+        this.statusText = this.pixelText('', 8, 20, 7, 0x8be0c2)
+        this.objectiveText = this.pixelText('', 8, 36, 7, 0xffd477)
+        this.messageText = this.pixelText('', W / 2, 61, 10, 0xf2efe2, true)
         this.messageText.visible = false
-        this.hudLayer.addChild(this.scoreText, this.statusText, this.messageText)
+        this.plungerText = this.pixelText('', 238, 324, 7, 0xffd477, true)
+        this.plungerText.anchor.set(0.5, 0)
+        this.plungerText.visible = false
+        this.hudLayer.addChild(this.scoreText, this.statusText, this.objectiveText, this.messageText, this.plungerText)
     }
 
     private pixelText(text: string, x: number, y: number, size: number, color: number, centered = false): Text {
@@ -289,7 +300,7 @@ export class MoonmailGame implements GameRuntime {
         if (!pointer) return
         pointer.x = x
         pointer.y = y
-        if (pointer.control === 'plunger') this.plungerPower = Math.max(0, Math.min(1, (y - pointer.y0) / 62))
+        if (pointer.control === 'plunger') this.plungerPower = plungerPowerForDrag(y - pointer.y0)
     }
 
     private pointerUp(id: number, x: number, y: number): void {
@@ -381,8 +392,12 @@ export class MoonmailGame implements GameRuntime {
     }
 
     private clearBalls(): void {
-        for (const ball of this.balls) ball.sprite.destroy()
+        for (const ball of this.balls) {
+            ball.sprite.destroy()
+            ball.halo.destroy()
+        }
         this.balls = []
+        this.ballTrailLayer.clear()
     }
 
     private serveBall(waiting: boolean): Ball {
@@ -390,7 +405,9 @@ export class MoonmailGame implements GameRuntime {
         const sprite = new Sprite(texture)
         sprite.anchor.set(0.5)
         sprite.position.set(231, 401)
-        this.ballLayer.addChild(sprite)
+        const halo = new Graphics().circle(0, 0, 7).fill({ color: 0x8be0c2, alpha: 0.2 })
+        halo.position.set(231, 401)
+        this.ballLayer.addChild(halo, sprite)
         const ball: Ball = {
             id: this.nextBallId++,
             x: 231,
@@ -403,6 +420,8 @@ export class MoonmailGame implements GameRuntime {
             waiting,
             lane: 1,
             sprite,
+            halo,
+            trail: [],
             contacts: new Set(),
             swallowedUntil: 0,
         }
@@ -434,6 +453,7 @@ export class MoonmailGame implements GameRuntime {
             this.accumulator -= FIXED_DT
         }
         this.animateFlippers(delta)
+        this.renderBallTrails()
         this.renderLights()
         this.updateHud()
     }
@@ -462,7 +482,7 @@ export class MoonmailGame implements GameRuntime {
                 ball.vy = -165
             }
             ball.age += dt
-            const lateGravity = ball.age > 26 && !this.rules.multiball ? 280 : 0
+            const lateGravity = ball.age > 18 && !this.rules.multiball ? 520 : 0
             ball.vy += (108 + lateGravity) * dt
             ball.x += ball.vx * dt
             ball.y += ball.vy * dt
@@ -572,7 +592,7 @@ export class MoonmailGame implements GameRuntime {
         for (let i = 0; i < TARGETS.length; i++) {
             const dx = ball.x - TARGETS[i]
             const dy = ball.y - 257
-            this.featureContact(ball, `target-${i}`, Math.abs(dx) < 10 && Math.abs(dy) < 9, () => {
+            this.featureContact(ball, `target-${i}`, Math.abs(dx) < 13 && Math.abs(dy) < 12, () => {
                 ball.vy = Math.abs(ball.vy) + 75
                 const newlyDown = hitTarget(this.rules, i as LaneId)
                 this.audio.play('target')
@@ -710,6 +730,7 @@ export class MoonmailGame implements GameRuntime {
         const index = this.balls.indexOf(ball)
         if (index >= 0) this.balls.splice(index, 1)
         ball.sprite.destroy()
+        ball.halo.destroy()
     }
 
     private capVelocity(ball: Ball): void {
@@ -720,7 +741,31 @@ export class MoonmailGame implements GameRuntime {
     }
 
     private syncBall(ball: Ball): void {
-        ball.sprite.position.set(Math.round(ball.x), Math.round(ball.y))
+        const x = Math.round(ball.x)
+        const y = Math.round(ball.y)
+        ball.sprite.position.set(x, y)
+        ball.halo.position.set(x, y)
+        ball.halo.alpha = 0.14 + (Math.sin(this.elapsed * 12 + ball.id) + 1) * 0.08
+        if (!ball.waiting) {
+            const last = ball.trail[ball.trail.length - 1]
+            if (!last || Math.hypot(x - last.x, y - last.y) >= 5) {
+                ball.trail.push({ x, y })
+                if (ball.trail.length > 7) ball.trail.shift()
+            }
+        }
+    }
+
+    private renderBallTrails(): void {
+        const trail = this.ballTrailLayer
+        trail.clear()
+        for (const ball of this.balls) {
+            for (let i = 0; i < ball.trail.length; i++) {
+                const point = ball.trail[i]
+                const alpha = ((i + 1) / ball.trail.length) * 0.5
+                const size = i >= ball.trail.length - 2 ? 3 : 2
+                trail.rect(point.x - 1, point.y - 1, size, size).fill({ color: i % 2 ? 0x8be0c2 : 0xf2a33a, alpha })
+            }
+        }
     }
 
     private spark(x: number, y: number, tint: number): void {
@@ -750,19 +795,32 @@ export class MoonmailGame implements GameRuntime {
         g.rect(0, 410, 110, 38).fill({ color: this.leftFlipper?.active ? 0x36b6a2 : 0x1d2850, alpha: 0.18 })
         g.rect(146, 410, 110, 38).fill({ color: this.rightFlipper?.active ? 0xf2a33a : 0x1d2850, alpha: 0.18 })
         if (this.balls.some((ball) => ball.waiting)) {
-            g.rect(241, 343, 5, 62).fill(0x10152b)
-            g.rect(241, 405 - this.plungerPower * 62, 5, this.plungerPower * 62).fill(0xf2a33a)
+            const top = 357
+            g.rect(240, top, 7, PLUNGER_TRAVEL_PX).fill(0x10152b)
+            g.rect(240, 405 - this.plungerPower * PLUNGER_TRAVEL_PX, 7, this.plungerPower * PLUNGER_TRAVEL_PX).fill(0xf2a33a)
+            for (let i = 0; i <= 4; i++) g.rect(237, 405 - i * 12, 3, 1).fill(i === 4 ? 0xffd477 : 0x33507a)
         }
         // Target, lane, scoop and lock lamps.
+        const pulse = 0.55 + (Math.sin(this.elapsed * 7) + 1) * 0.2
+        const bankNeeded = !this.rules.activeJob && !this.rules.lockOpen && !this.rules.scoopLit
         for (let i = 0; i < 3; i++) {
-            if (this.rules.targets[i]) g.circle(TARGETS[i], 269, 3).fill(0xffd477)
+            if (this.rules.targets[i]) {
+                g.circle(TARGETS[i], 269, 3).fill(0xffd477)
+            } else if (bankNeeded) {
+                g.rect(TARGETS[i] - 11, 247, 22, 21).stroke({ color: 0xffd477, width: 2, alpha: pulse })
+                g.poly([TARGETS[i] - 4, 244, TARGETS[i], 248, TARGETS[i] + 4, 244]).fill({ color: 0xffd477, alpha: pulse })
+            }
             if (this.rules.laneProgress[i]) g.rect(LANES[i] - 7, 93, 14, 2).fill(0x8be0c2)
+            else if (this.rules.activeJob === 'lanes') g.rect(LANES[i] - 11, 56, 22, 38).stroke({ color: 0x8be0c2, width: 2, alpha: pulse })
+        }
+        if (this.rules.activeJob === 'bumpers') {
+            for (const bumper of BUMPERS) g.circle(bumper.x, bumper.y, 18).stroke({ color: 0xf2a33a, width: 2, alpha: pulse })
         }
         if (this.rules.scoopLit || this.rules.laneScoopReady || this.rules.superLit) {
             const color = this.rules.superLit ? 0xffd477 : 0x36b6a2
-            g.circle(128, 209, 18).stroke({ color, width: 2, alpha: 0.95 })
+            g.circle(128, 209, 20).stroke({ color, width: 3, alpha: pulse })
         }
-        if (this.rules.lockOpen) g.rect(27, 98, 32, 51).stroke({ color: this.rules.locks === 1 ? 0xffd477 : 0x36b6a2, width: 2 })
+        if (this.rules.lockOpen) g.rect(25, 96, 36, 55).stroke({ color: this.rules.locks === 1 ? 0xffd477 : 0x36b6a2, width: 3, alpha: pulse })
         if (this.rules.activeJob === 'ramps' || this.rules.multiball) {
             const side = this.rules.multiball ? this.rules.nextJackpotRamp : this.rules.nextJobRamp
             const x = side === 'left' ? 62 : 194
@@ -772,13 +830,45 @@ export class MoonmailGame implements GameRuntime {
     }
 
     private updateHud(): void {
-        if (!this.scoreText || !this.statusText) return
+        if (!this.scoreText || !this.statusText || !this.objectiveText || !this.plungerText) return
         this.scoreText.text = `${this.rules.score.toString().padStart(7, '0')}`
         const active = this.rules.activeJob
         const jobPart = active
             ? `${JOB_NAME[this.locale][active]} ${Math.ceil(this.rules.jobSeconds)}s ${this.jobProgress(active)}`
             : `${TEXT[this.locale].jobs} ${this.rules.completedJobs.length}/3`
-        this.statusText.text = `${TEXT[this.locale].ball} ${this.ballsRemaining}  ·  ${jobPart}  ·  ${TEXT[this.locale].lock} ${this.rules.locks}/2`
+        const ballNumber = Math.min(3, 4 - this.ballsRemaining)
+        this.statusText.text = `${TEXT[this.locale].ball} ${ballNumber}/3  ·  ${jobPart}  ·  ${TEXT[this.locale].lock} ${this.rules.locks}/2`
+        this.objectiveText.text = this.currentObjective()
+        const waiting = this.balls.some((ball) => ball.waiting)
+        this.plungerText.visible = waiting
+        this.plungerText.text = `${Math.round(this.plungerPower * 100)}%\n↓100`
+    }
+
+    private currentObjective(): string {
+        const ko = this.locale === 'ko'
+        if (this.balls.some((ball) => ball.waiting)) return ko ? '당기기 ↓ 100% · 놓아서 발사' : 'PULL ↓ TO 100% · RELEASE'
+        if (this.rules.multiball) {
+            if (this.rules.superLit) return ko ? 'DAWN ▸ 중앙 태양 스쿱 = 슈퍼' : 'DAWN ▸ CENTER SUN SCOOP = SUPER'
+            const side = this.rules.nextJackpotRamp === 'left' ? (ko ? '좌' : 'LEFT') : (ko ? '우' : 'RIGHT')
+            return ko ? `DAWN ▸ ${side} 램프 잭팟 ${this.rules.jackpots}/3` : `DAWN ▸ ${side} RAMP JACKPOT ${this.rules.jackpots}/3`
+        }
+        if (this.rules.lockOpen) return ko ? `다음 ▸ 좌측 우편함 락 ${this.rules.locks}/2` : `NEXT ▸ LEFT MAILBOX LOCK ${this.rules.locks}/2`
+        if (this.rules.activeJob === 'ramps') {
+            const side = this.rules.nextJobRamp === 'left' ? (ko ? '좌' : 'LEFT') : (ko ? '우' : 'RIGHT')
+            return ko ? `작업 ▸ ${side} 램프 다음 ${this.rules.rampProgress}/4` : `JOB ▸ ${side} RAMP NEXT ${this.rules.rampProgress}/4`
+        }
+        if (this.rules.activeJob === 'bumpers') return ko ? `작업 ▸ 분류 범퍼 ${this.rules.bumperProgress}/12` : `JOB ▸ SORT BUMPERS ${this.rules.bumperProgress}/12`
+        if (this.rules.activeJob === 'lanes') {
+            if (this.rules.laneScoopReady) return ko ? '작업 ▸ 중앙 태양 스쿱으로 완료' : 'JOB ▸ SUN SCOOP TO FINISH'
+            const count = this.rules.laneProgress.filter(Boolean).length
+            return ko ? `작업 ▸ 상단 3레인 ${count}/3` : `JOB ▸ TOP LANES ${count}/3`
+        }
+        if (this.rules.scoopLit) {
+            const number = this.rules.completedJobs.length + 1
+            return ko ? `다음 ▸ 중앙 태양 스쿱 → 작업 ${number}` : `NEXT ▸ SUN SCOOP → START JOB ${number}`
+        }
+        const down = this.rules.targets.filter(Boolean).length
+        return ko ? `다음 ▸ 봉투 3개 ${down}/3 → 태양 스쿱` : `NEXT ▸ ENVELOPES ${down}/3 → SUN SCOOP`
     }
 
     private jobProgress(job: JobId): string {
@@ -886,6 +976,7 @@ export class MoonmailGame implements GameRuntime {
             rightFlipper: Boolean(this.rightFlipper?.active),
             plungerPower: Math.round(this.plungerPower * 100),
             waitingForLaunch: this.balls.some((ball) => ball.waiting),
+            objective: this.currentObjective(),
             paused: this.paused,
         }
     }

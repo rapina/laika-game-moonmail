@@ -1,14 +1,25 @@
 {
   "schemaVersion": 1,
-  "firstImplementationHash": "00fba11d2f6e696ca5d552035c13f794e24a3e634a04f6a3611f638aaca2637c",
+  "firstImplementationHash": "d1d0695de8549c45b665f13f6750bd2f8be36c94332cac216d5ac3aab74f176f",
+  "playtest": {
+    "viewport": "390x844",
+    "method": "coordinate-only blind play; no design document, source, debug state, or intended target sequence provided"
+  },
   "observation": [
-    "The table, controls, and result overlay were legible, but the 256x448 backing store became softer than intended when enlarged on 390px and 430px DPR-3 screens.",
-    "The initial blind build check could operate flippers but did not express the required drag-release plunger gesture, leaving the first ball waiting and failing to validate a complete run."
+    "The player understood the overall goal as 3 jobs plus 2 locks leading to the 3-ball express, and moved through INTRO, TITLE, and GAME without help.",
+    "Plunger drags visibly reported 48% and 73%. A drag ending near the bottom still stopped at 73%, so the distance required for maximum power was unclear.",
+    "The two held flipper zones were visibly mapped and both worked. A third-lane skill shot appeared and score rose quickly, reaching about 221,000.",
+    "There was no in-play explanation of what exactly completes a JOB or a LOCK. Repeated top-center contacts raised score while JOBS 0/3 and LOCK 0/2 stayed unchanged, leaving the next useful shot hard to infer.",
+    "The ball read as a small white point and was easy to lose among envelope marks, stars, and impact sparks.",
+    "Across three attempts, BALL 1 remained active long enough that later balls and RESULT were not reached during the observation."
   ],
   "changes": [
-    "Kept the 256x448 logical scene and raised the device-density backing resolution while preserving nearest-neighbor raster sampling.",
-    "Exposed the visible waiting-for-launch state and taught the production smoke driver to perform a real drag-release on the right plunger before using independent flipper inputs.",
-    "Added a full shell flow check that verifies INTRO -> TITLE -> GAME -> RESULT, simultaneous two-pointer flippers, and result restart."
+    "Calibrated the visible plunger travel to 48 logical pixels, added a live 0-100% meter with quarter ticks, and made a handle-to-bottom drag reach 100%.",
+    "Added a persistent bilingual NEXT/JOB/DAWN objective line. It names the envelope bank, sun scoop, required ramp side, bumper or lane count, left mailbox lock, and current jackpot target as progression changes.",
+    "Added matching pulsing field highlights to unfinished envelope targets, active job devices, the lit scoop, open mailbox lock, and alternating jackpot ramp. Envelope target collision now matches the full visible target face.",
+    "Redrew the active ball as a 10x10 cyan/amber raster sprite and added a short alternating cyan/amber pixel trail plus a soft pulse halo.",
+    "Changed the HUD from an ambiguous remaining-ball value to BALL 1/3, 2/3, or 3/3, and moved single-ball anti-stall gravity from 26 seconds to 18 seconds so a demo run reaches later balls and RESULT.",
+    "Extended the flow check to prove a near-bottom plunger drag reaches 100%, releases the ball, exposes a current objective, preserves simultaneous flippers, and restarts after RESULT."
   ],
-  "finalHash": "d1d0695de8549c45b665f13f6750bd2f8be36c94332cac216d5ac3aab74f176f"
+  "finalHash": "f52e1b063df7f7c578a8c2a4f1fbe77afc604369e5698105f0116b23fd4402c5"
 }
