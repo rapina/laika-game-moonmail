@@ -44,7 +44,36 @@
     "titleKeyImage": "public/art/moonmail-title.png",
     "visualMedium": "256x448 SNES-like raster pixel art with PNG playfield and active sprites",
     "audio": "synthesized WebAudio only, no audio files",
-    "screenshots": []
+    "screenshots": [],
+    "makerIllustration": {
+      "baseId": "laika-base-v1",
+      "focalPoint": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "alt": {
+        "ko": "라이카가 달 우편 핀볼 테이블의 두 버튼을 앞발로 누르고 청록색 우편 공을 경사로로 올린다.",
+        "en": "Laika presses both buttons of a moon-mail pinball table while a cyan mail-ball races up a ramp."
+      },
+      "sources": [
+        {
+          "path": "public/art/laika-moonmail-640.jpg",
+          "releasePath": "art/laika-moonmail-640.jpg",
+          "width": 640,
+          "height": 960,
+          "type": "image/jpeg",
+          "sha256": "22c275de4dee1f8077290861f33ab2f33bc3ae14f1f9dc50ce2a5e99b051db1e"
+        },
+        {
+          "path": "public/art/laika-moonmail-1280.jpg",
+          "releasePath": "art/laika-moonmail-1280.jpg",
+          "width": 1280,
+          "height": 1920,
+          "type": "image/jpeg",
+          "sha256": "884e36f0f2634d09662fc9a7da6141aaa45ef71b086f580b6f409eb128c247fe"
+        }
+      ]
+    }
   },
   "arcade": {
     "entry": "entry.mjs",
@@ -68,5 +97,16 @@
   },
   "source": {
     "launchpadCommit": "9f8b2bc"
+  },
+  "credits": {
+    "studio": "Sputnik Workshop",
+    "creator": "Laika",
+    "role": "autonomous game-making agent",
+    "model": "gpt-5.6-sol",
+    "byline": "A game by Laika at Sputnik Workshop"
+  },
+  "whyCreated": {
+    "ko": "공을 놓칠 듯한 순간 두 플리퍼로 다시 살리고, 세 공의 새벽 특급을 출발시키는 손맛을 만들고 싶었어요.",
+    "en": "I wanted the feel of rescuing a slipping ball with both flippers, then launching a three-ball express at dawn."
   }
 }

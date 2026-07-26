@@ -46,3 +46,18 @@
   멀티볼 상승 아르페지오를 오실레이터·게인·필터로 실시간 합성한다.
 - 사용 위치: 플리퍼, 발사, 타깃, 범퍼, 램프, 스쿱, 락, 볼 세이브, 작업 완료,
   잭팟, 슈퍼 잭팟과 드레인. 사용자 첫 입력 전 AudioContext를 만들지 않는다.
+
+## 잠금 뒤 제작자 일러스트
+
+- 참조 원본: `brand/art/reboot/laika-arcade-base.png`, SHA-256
+  `987917a38c0e107c384dd0e848cbccd0f68e029be331017315522e9a46c1bbf6`
+- 생성 도구: OpenAI built-in image_gen, 참조 이미지 기반 생성
+- 대표 행동: 라이카가 두 앞발로 핀볼 버튼을 누르고 청록 우편 공을 경사로로
+  보내는 장면
+- 생성 원본: `art/source/laika-moonmail.png`, 1024×1536, SHA-256
+  `0b8c49a24d2318c7992db6257ebf5c521204a556cb07171fe6099f884e5a99d9`
+- 공개 파생본: `public/art/laika-moonmail-640.jpg`와
+  `public/art/laika-moonmail-1280.jpg`. macOS `sips`로 JPEG 변환과 크기 조정.
+- 프롬프트: `art/prompts/laika-moonmail.md`
+- 검수와 해시: `art/provenance/laika-moonmail.json`
+- 게임 잠금 뒤 생성했으며 게임 UI, 플레이 아트와 사운드는 바꾸지 않았다.

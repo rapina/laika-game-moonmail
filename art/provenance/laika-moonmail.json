@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-07-27",
+  "tool": "OpenAI built-in image_gen",
+  "mode": "reference-guided generation",
+  "reference": {
+    "path": "../../../brand/art/reboot/laika-arcade-base.png",
+    "sha256": "987917a38c0e107c384dd0e848cbccd0f68e029be331017315522e9a46c1bbf6"
+  },
+  "source": {
+    "path": "art/source/laika-moonmail.png",
+    "width": 1024,
+    "height": 1536,
+    "sha256": "0b8c49a24d2318c7992db6257ebf5c521204a556cb07171fe6099f884e5a99d9"
+  },
+  "derivatives": [
+    {
+      "path": "public/art/laika-moonmail-640.jpg",
+      "width": 640,
+      "height": 960,
+      "sha256": "22c275de4dee1f8077290861f33ab2f33bc3ae14f1f9dc50ce2a5e99b051db1e"
+    },
+    {
+      "path": "public/art/laika-moonmail-1280.jpg",
+      "width": 1280,
+      "height": 1920,
+      "sha256": "884e36f0f2634d09662fc9a7da6141aaa45ef71b086f580b6f409eb128c247fe"
+    }
+  ],
+  "postProcessing": "Converted to JPEG with macOS sips at quality 86 and 88; 640px card derivative downscaled and 1280px detail derivative resampled from the source.",
+  "review": {
+    "faceMarkings": "pass",
+    "pointedEars": "pass",
+    "creamHarnessAndOrangeConnector": "pass",
+    "fourLeggedAnatomy": "pass",
+    "generatedText": "none",
+    "mobileCrop": "pass"
+  }
+}
