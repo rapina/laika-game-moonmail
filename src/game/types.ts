@@ -14,6 +14,10 @@ export interface GameResult {
     score: number
     /** Stage / level / round reached. Shown on the ranking screen; 0 if meaningless. */
     phase: number
+    /** Moonmail result details shown on the bilingual RESULT screen. */
+    jobs?: number
+    jackpots?: number
+    success?: boolean
 }
 
 export interface GameCallbacks {

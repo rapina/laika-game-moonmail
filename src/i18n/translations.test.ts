@@ -10,8 +10,8 @@ const locales = Object.keys(translations) as (keyof typeof translations)[]
 const baseline = 'en' as const
 
 describe('translations', () => {
-    it('covers ko / en / zh / ja', () => {
-        expect(new Set(locales)).toEqual(new Set(['ko', 'en', 'zh', 'ja']))
+    it('covers ko / en', () => {
+        expect(new Set(locales)).toEqual(new Set(['ko', 'en']))
     })
 
     it.each(locales)('locale "%s" has the same keys as the baseline', (locale) => {

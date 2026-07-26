@@ -1,4 +1,4 @@
-package com.example.gametemplate;
+package com.sputnikworkshop.moonmail;
 
 import com.getcapacitor.BridgeActivity;
 

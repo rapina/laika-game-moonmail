@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "firstImplementationHash": "00fba11d2f6e696ca5d552035c13f794e24a3e634a04f6a3611f638aaca2637c",
+  "observation": [
+    "The table, controls, and result overlay were legible, but the 256x448 backing store became softer than intended when enlarged on 390px and 430px DPR-3 screens.",
+    "The initial blind build check could operate flippers but did not express the required drag-release plunger gesture, leaving the first ball waiting and failing to validate a complete run."
+  ],
+  "changes": [
+    "Kept the 256x448 logical scene and raised the device-density backing resolution while preserving nearest-neighbor raster sampling.",
+    "Exposed the visible waiting-for-launch state and taught the production smoke driver to perform a real drag-release on the right plunger before using independent flipper inputs.",
+    "Added a full shell flow check that verifies INTRO -> TITLE -> GAME -> RESULT, simultaneous two-pointer flippers, and result restart."
+  ],
+  "finalHash": "d1d0695de8549c45b665f13f6750bd2f8be36c94332cac216d5ac3aab74f176f"
+}

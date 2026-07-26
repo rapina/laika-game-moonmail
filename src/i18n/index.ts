@@ -4,7 +4,7 @@ import { translations, type Locale } from './translations'
 import { STORAGE_PREFIX } from '../appConfig'
 
 const STORAGE_KEY = `${STORAGE_PREFIX}-locale`
-const SUPPORTED: Locale[] = ['ko', 'en', 'zh', 'ja']
+const SUPPORTED: Locale[] = ['ko', 'en']
 
 function detectLocale(): Locale {
     try {
@@ -14,8 +14,6 @@ function detectLocale(): Locale {
 
     const nav = navigator.language?.toLowerCase() ?? ''
     if (nav.startsWith('ko')) return 'ko'
-    if (nav.startsWith('zh')) return 'zh'
-    if (nav.startsWith('ja')) return 'ja'
     return 'en'
 }
 

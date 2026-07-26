@@ -7,7 +7,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.example.gametemplate"
+    namespace = "com.sputnikworkshop.moonmail"
     compileSdk = rootProject.ext.compileSdkVersion
 
     signingConfigs {
@@ -22,7 +22,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.example.gametemplate"
+        applicationId "com.sputnikworkshop.moonmail"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

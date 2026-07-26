@@ -1,131 +1,57 @@
-import { useState, useEffect, useCallback } from 'react'
-import i18n from './i18n'
-import { App as CapApp } from '@capacitor/app'
+import { useEffect, useState } from 'react'
 import MobileFrame from './components/MobileFrame'
-import TitleScreen from './screens/TitleScreen'
 import GameScreen from './components/GameScreen'
-import RankingScreen from './screens/RankingScreen'
-import AdBanner from './components/AdBanner'
-import Modal from './components/Modal'
-import { useBGM } from './hooks/useBGM'
-import { bgm } from './audio/BGMManager'
-import { getPlatformAdapter, type PlatformAdapter } from './platform'
-import { getAdAdapter, type AdAdapter } from './ads'
-import { getIapAdapter, type IapAdapter } from './iap'
-import { incrementPlayCount } from './game/records'
+import IntroScreen from './screens/IntroScreen'
+import ResultScreen from './screens/ResultScreen'
+import TitleScreen from './screens/TitleScreen'
 import type { GameResult } from './game/types'
-import { APP_CONFIG } from './appConfig'
 
-type Screen = 'title' | 'game' | 'ranking'
+type Screen = 'INTRO' | 'TITLE' | 'GAME' | 'RESULT'
 
 export default function App() {
-    const [screen, setScreen] = useState<Screen>('title')
-    const [platform, setPlatform] = useState<PlatformAdapter | null>(null)
-    const [adAdapter, setAdAdapter] = useState<AdAdapter | null>(null)
-    const [, setIapAdapter] = useState<IapAdapter | null>(null)
-    const [lastResult, setLastResult] = useState<GameResult | null>(null)
-    const [modal, setModal] = useState<{ title?: string; message: string } | null>(null)
-    useBGM(screen)
+    const [screen, setScreen] = useState<Screen>('INTRO')
+    const [muted, setMuted] = useState(false)
+    const [result, setResult] = useState<GameResult | null>(null)
+    const [run, setRun] = useState(1)
 
-    // Initialize platform + ad + IAP adapters
     useEffect(() => {
-        getPlatformAdapter().then(setPlatform)
-        getAdAdapter().then(async (adapter) => {
-            await adapter.initialize()
-            setAdAdapter(adapter)
-        })
-        getIapAdapter().then(async (adapter) => {
-            await adapter.initialize()
-            setIapAdapter(adapter)
-        })
-    }, [])
+        ;(globalThis as unknown as Record<string, unknown>).__appState = screen
+    }, [screen])
 
-    // Suspend/resume audio on app background/foreground
-    useEffect(() => {
-        const listener = CapApp.addListener('appStateChange', ({ isActive }) => {
-            if (isActive) {
-                bgm.resume()
-            } else {
-                bgm.suspend()
-            }
-        })
-        return () => { listener.then(l => l.remove()) }
-    }, [])
-
-    // Preload full-screen ad inventory so game-over surfaces show instantly.
-    useEffect(() => {
-        if (!adAdapter) return
-        adAdapter.preloadInterstitial()
-        adAdapter.preloadRewardedAd('default')
-    }, [adAdapter])
-
-    const handleGameOver = useCallback((result: GameResult) => {
-        setLastResult(result)
-        const plays = incrementPlayCount()
-        const every = APP_CONFIG.interstitialEveryNGames
-        if (adAdapter && every > 0 && plays % every === 0) {
-            adAdapter.showInterstitial().finally(() => setScreen('ranking'))
-            return
-        }
-        setScreen('ranking')
-    }, [adAdapter])
-
-    const openRanking = useCallback(async () => {
-        if (platform?.hasNativeLeaderboard) {
-            try {
-                await platform.openLeaderboard()
-                return
-            } catch {
-                setModal({ title: i18n.t('error.title'), message: i18n.t('error.leaderboard') })
-                return
-            }
-        }
-        setLastResult(null)
-        setScreen('ranking')
-    }, [platform])
-
-    const renderScreen = () => {
-        switch (screen) {
-            case 'title':
-                return (
-                    <TitleScreen
-                        onPlay={() => setScreen('game')}
-                        onRanking={openRanking}
-                    />
-                )
-
-            case 'game':
-                return (
-                    <GameScreen
-                        key={`game-${Date.now()}`}
-                        onGameOver={handleGameOver}
-                        onExit={() => setScreen('title')}
-                    />
-                )
-
-            case 'ranking':
-                return platform ? (
-                    <RankingScreen
-                        result={lastResult}
-                        platform={platform}
-                        onRetry={() => setScreen('game')}
-                        onMenu={() => setScreen('title')}
-                    />
-                ) : null
-        }
+    const startGame = () => {
+        setResult(null)
+        setRun((value) => value + 1)
+        setScreen('GAME')
     }
 
     return (
         <MobileFrame>
-            {renderScreen()}
-            {modal && (
-                <Modal
-                    title={modal.title}
-                    message={modal.message}
-                    onClose={() => setModal(null)}
+            {screen === 'INTRO' && <IntroScreen onContinue={() => setScreen('TITLE')} />}
+            {screen === 'TITLE' && (
+                <TitleScreen
+                    muted={muted}
+                    onToggleMute={() => setMuted((value) => !value)}
+                    onPlay={startGame}
                 />
             )}
-            {APP_CONFIG.showAdBanner && <AdBanner adapter={adAdapter} />}
+            {screen === 'GAME' && (
+                <GameScreen
+                    key={run}
+                    muted={muted}
+                    onGameOver={(nextResult) => {
+                        setResult(nextResult)
+                        setScreen('RESULT')
+                    }}
+                    onExit={() => setScreen('TITLE')}
+                />
+            )}
+            {screen === 'RESULT' && result && (
+                <ResultScreen
+                    result={result}
+                    onRetry={startGame}
+                    onMenu={() => setScreen('TITLE')}
+                />
+            )}
         </MobileFrame>
     )
 }

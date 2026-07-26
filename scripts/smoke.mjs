@@ -152,9 +152,22 @@ async function main() {
             if (box) {
                 const beforeState = await page.evaluate(() => globalThis.__gameState ?? null)
                 const beforeImage = await page.locator('canvas').screenshot().catch(() => null)
-                const x = box.x + box.width * (0.1 + Math.random() * 0.8)
-                const y = box.y + box.height * (0.1 + Math.random() * 0.8)
-                await page.mouse.click(x, y).catch(() => {})
+                if (beforeState?.waitingForLaunch) {
+                    // Moonmail's visible launch control is a drag-release plunger.
+                    // Exercise that real gesture instead of waiting for a blind click
+                    // to land in its narrow shooter lane by chance.
+                    const x = box.x + box.width * 0.91
+                    const y0 = box.y + box.height * 0.79
+                    const y1 = box.y + box.height * 0.91
+                    await page.mouse.move(x, y0)
+                    await page.mouse.down()
+                    await page.mouse.move(x, y1, { steps: 4 })
+                    await page.mouse.up()
+                } else {
+                    const x = box.x + box.width * (0.1 + Math.random() * 0.8)
+                    const y = box.y + box.height * (0.68 + Math.random() * 0.22)
+                    await page.mouse.click(x, y).catch(() => {})
+                }
                 await delay(180)
                 const afterState = await page.evaluate(() => globalThis.__gameState ?? null)
                 const afterImage = await page.locator('canvas').screenshot().catch(() => null)

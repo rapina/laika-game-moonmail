@@ -1,0 +1,20 @@
+{
+  "sourceHash": "d1d0695de8549c45b665f13f6750bd2f8be36c94332cac216d5ac3aab74f176f",
+  "states": [
+    "INTRO",
+    "TITLE",
+    "GAME",
+    "RESULT"
+  ],
+  "expectedStates": [
+    "INTRO",
+    "TITLE",
+    "GAME",
+    "RESULT"
+  ],
+  "stateOrder": true,
+  "simultaneousFlippers": true,
+  "resultRestart": true,
+  "errors": [],
+  "pass": true
+}

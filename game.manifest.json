@@ -1,66 +1,72 @@
 {
   "schemaVersion": 1,
-  "slug": "gametemplate",
-  "appId": "com.example.gametemplate",
+  "slug": "moonmail",
+  "appId": "com.sputnikworkshop.moonmail",
   "version": "0.0.1",
-  "releaseDate": "TODO-YYYY-MM-DD",
+  "releaseDate": "2026-07-27",
   "title": {
-    "ko": "게임 템플릿",
-    "en": "Game Template"
+    "ko": "문메일: 라스트 시프트",
+    "en": "MOONMAIL: LAST SHIFT"
   },
   "tagline": {
-    "ko": "TODO 한 줄 소개",
-    "en": "TODO one line pitch"
+    "ko": "동트기 전 세 배달 작업과 3볼 특급 우편을 완성하는 세로형 핀볼.",
+    "en": "A vertical pinball shift: clear three deliveries and launch a 3-ball express before dawn."
   },
   "description": {
-    "ko": "TODO 규칙과 목표, 실패 조건을 중립 문체로 적는다.",
-    "en": "TODO describe the rules, the goal, and the failure condition in neutral prose."
+    "ko": "플런저로 볼을 발사하고 두 플리퍼로 램프, 범퍼, 레인과 타깃을 맞힌다. 세 시간제 작업을 마쳐 볼 락을 열고 두 볼을 잠근 뒤, 3볼 멀티볼에서 교대 램프 잭팟 세 번과 중앙 슈퍼 잭팟을 획득하면 성공한다. 기본 볼 세 개를 모두 잃으면 근무가 끝난다.",
+    "en": "Launch with the plunger and use both flippers to hit ramps, bumpers, lanes, and targets. Clear three timed jobs, lock two balls, then score three alternating ramp jackpots and the center super jackpot in 3-ball multiball. The shift ends when all three base balls drain."
   },
   "controls": {
     "ko": {
-      "primary": "TODO 주 입력이 무엇을 하는지",
-      "keyboard": "TODO 키보드 대체 입력",
-      "restart": "결과 화면을 눌러 다시 시작한다."
+      "primary": "화면 아래 좌우를 독립적으로 터치해 두 플리퍼를 동시에 조작하고, 오른쪽 플런저를 아래로 끌었다 놓아 발사하며, 플레이필드를 짧게 스와이프해 너지한다.",
+      "keyboard": "A/왼쪽 화살표와 D/오른쪽 화살표로 플리퍼, Space로 중간 강도 발사.",
+      "restart": "결과 화면의 다시 근무 버튼 또는 캔버스 결과 화면을 눌러 다시 시작한다."
     },
     "en": {
-      "primary": "TODO what the primary input does",
-      "keyboard": "TODO keyboard alternative",
-      "restart": "Tap the result screen to start again."
+      "primary": "Touch the lower left and right zones independently for simultaneous flippers, drag and release the right plunger to launch, and short-swipe the playfield to nudge.",
+      "keyboard": "A/Left and D/Right control the flippers; Space launches at medium strength.",
+      "restart": "Use Work Again on the result screen, or tap the canvas result overlay, to restart."
     }
   },
   "session": {
-    "typicalSeconds": 90,
-    "maxSeconds": 180,
+    "typicalSeconds": 120,
+    "maxSeconds": 210,
     "failureBudget": 3
   },
   "display": {
-    "designWidth": 390,
-    "designHeight": 844,
+    "designWidth": 256,
+    "designHeight": 448,
     "orientation": "portrait",
     "fit": "letterbox-uniform"
   },
   "supportedLocales": ["ko", "en"],
   "media": {
-    "titleKeyImage": "public/art/title-key.jpg",
-    "visualMedium": "TODO 시각 매체",
+    "titleKeyImage": "public/art/moonmail-title.png",
+    "visualMedium": "256x448 SNES-like raster pixel art with PNG playfield and active sprites",
     "audio": "synthesized WebAudio only, no audio files",
     "screenshots": []
   },
   "arcade": {
     "entry": "entry.mjs",
-    "capabilities": ["pointer", "keyboard"],
+    "capabilities": ["pointer", "multitouch", "keyboard", "audio"],
     "viewport": {
-      "width": 390,
-      "height": 844,
+      "width": 256,
+      "height": 448,
       "fit": "letterbox-uniform"
     },
     "assets": [
       { "source": "public/fonts/Galmuri11.woff2", "releasePath": "fonts/Galmuri11.woff2" },
       { "source": "public/fonts/Galmuri11-Bold.woff2", "releasePath": "fonts/Galmuri11-Bold.woff2" },
-      { "source": "public/fonts/Galmuri14.woff2", "releasePath": "fonts/Galmuri14.woff2" }
+      { "source": "public/fonts/Galmuri14.woff2", "releasePath": "fonts/Galmuri14.woff2" },
+      { "source": "public/art/moonmail-title.png", "releasePath": "art/moonmail-title.png" },
+      { "source": "public/art/moonmail-table.png", "releasePath": "art/moonmail-table.png" },
+      { "source": "public/art/mail-ball.png", "releasePath": "art/mail-ball.png" },
+      { "source": "public/art/flipper-left.png", "releasePath": "art/flipper-left.png" },
+      { "source": "public/art/flipper-right.png", "releasePath": "art/flipper-right.png" },
+      { "source": "public/art/mail-spark.png", "releasePath": "art/mail-spark.png" }
     ]
   },
   "source": {
-    "launchpadCommit": "TODO-launchpad-sha"
+    "launchpadCommit": "9f8b2bc"
   }
 }

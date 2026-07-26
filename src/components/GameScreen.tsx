@@ -1,11 +1,12 @@
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { GameResult } from '../game/types'
-import { SampleGame } from '../game/SampleGame'
+import { MoonmailGame } from '../game/MoonmailGame'
 
 interface Props {
     onGameOver(result: GameResult): void
     onExit(): void
+    muted?: boolean
 }
 
 /**
@@ -13,7 +14,7 @@ interface Props {
  * Swap `new SampleGame()` for the real game's runtime — nothing else in the
  * shell needs to change as long as it implements GameRuntime.
  */
-export default function GameScreen({ onGameOver, onExit }: Props) {
+export default function GameScreen({ onGameOver, onExit, muted = false }: Props) {
     const { t } = useTranslation()
     const hostRef = useRef<HTMLDivElement>(null)
     const endedRef = useRef(false)
@@ -22,13 +23,14 @@ export default function GameScreen({ onGameOver, onExit }: Props) {
         const host = hostRef.current
         if (!host) return
 
-        const game = new SampleGame()
+        const game = new MoonmailGame()
+        game.setMuted(muted)
         game.mount(host, {
             onGameOver: (result) => {
                 if (endedRef.current) return
                 endedRef.current = true
                 // Let the runtime's game-over presentation breathe briefly.
-                setTimeout(() => onGameOver(result), 800)
+                setTimeout(() => onGameOver(result), 900)
             },
         })
 
@@ -36,13 +38,16 @@ export default function GameScreen({ onGameOver, onExit }: Props) {
         const poll = setInterval(() => {
             ;(globalThis as unknown as Record<string, unknown>).__gameState = game.getDebugState()
         }, 250)
+        const onVisibility = () => game.setPaused(document.hidden)
+        document.addEventListener('visibilitychange', onVisibility)
 
         return () => {
             clearInterval(poll)
+            document.removeEventListener('visibilitychange', onVisibility)
             game.destroy()
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [muted, onGameOver])
 
     return (
         <div className="screen game-screen">

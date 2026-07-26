@@ -1,5 +1,5 @@
 {
-  "name": "laika-game-lunchpad",
+  "name": "moonmail",
   "private": true,
   "version": "0.0.1",
   "type": "module",
@@ -22,6 +22,7 @@
     "toss:dev": "cross-env VITE_PLATFORM=toss npx granite dev",
     "toss:build": "cross-env VITE_PLATFORM=toss tsc -b && cross-env VITE_PLATFORM=toss npx ait build",
     "smoke": "node scripts/smoke.mjs",
+    "verify:flow": "node scripts/flow-smoke.mjs",
     "viewport": "node scripts/viewport-smoke.mjs",
     "csp": "node scripts/csp-portal-check.mjs",
     "test": "vitest run",
