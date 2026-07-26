@@ -25,6 +25,7 @@ export default defineConfig(({ mode }) => {
             outDir: isArcadeBuild ? 'dist-arcade' : 'dist',
             minify: isDebugBuild ? false : 'esbuild',
             sourcemap: isDebugBuild,
+            assetsInlineLimit: 0,
             ...(isArcadeBuild ? {
                 copyPublicDir: false,
                 lib: {

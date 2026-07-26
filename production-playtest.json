@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "initialBuildHash": "d1d0695de8549c45b665f13f6750bd2f8be36c94332cac216d5ac3aab74f176f",
-  "finalBuildHash": "f52e1b063df7f7c578a8c2a4f1fbe77afc604369e5698105f0116b23fd4402c5",
+  "finalBuildHash": "2385f5753814a0448fca5b5e59fe643a1b482722cb7e0ccb81613445ce350fc7",
   "sessions": [
     {
       "playerContext": "build-only",
@@ -32,6 +32,6 @@
         "change": "HUD를 BALL n/3으로 바꾸고 단일 공 정체 방지 시간을 26초에서 18초로 줄여 이후 공과 결과에 도달하는 리듬을 만들었다."
       }
     ],
-    "releaseCandidateReason": "블라인드 플레이에서 드러난 조작 범위, 다음 목표, 공 시인성과 한 공의 정체를 다시 만들었고, 24개 게임 테스트와 프로덕션 빌드, 90초 스모크, 네 상태 흐름, 세 세로 뷰포트 검증을 최종 해시로 다시 통과했다."
+    "releaseCandidateReason": "블라인드 플레이에서 드러난 조작 범위, 다음 목표, 공 시인성과 한 공의 정체를 다시 만들었고, 24개 게임 테스트와 프로덕션 빌드, 90초 스모크, 네 상태 흐름, 세 세로 뷰포트 및 포털 CSP 검증을 최종 해시로 다시 통과했다."
   }
 }

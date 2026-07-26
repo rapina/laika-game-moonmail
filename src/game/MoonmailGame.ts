@@ -7,11 +7,7 @@ import {
     Text,
     Texture,
 } from 'pixi.js'
-import tableUrl from '../../public/art/moonmail-table.png?url'
-import ballUrl from '../../public/art/mail-ball.png?url'
-import leftFlipperUrl from '../../public/art/flipper-left.png?url'
-import rightFlipperUrl from '../../public/art/flipper-right.png?url'
-import sparkUrl from '../../public/art/mail-spark.png?url'
+const artPath = (name: string) => `art/${name}`
 import { APP_CONFIG } from '../appConfig'
 import { getLocale } from '../i18n'
 import type { GameCallbacks, GameRuntime } from './types'
@@ -113,6 +109,12 @@ const TARGETS = [101, 128, 155] as const
 const LANES = [58, 128, 198] as const
 
 export class MoonmailGame implements GameRuntime {
+    constructor(private readonly assetBaseUrl = '/') {}
+
+    private assetUrl(name: string): string {
+        return new URL(artPath(name), new URL(this.assetBaseUrl, window.location.href)).href
+    }
+
     private app: Application | null = null
     private callbacks: GameCallbacks | null = null
     private rules: MoonmailRulesState = createRulesState()
@@ -182,11 +184,11 @@ export class MoonmailGame implements GameRuntime {
         this.resizeObs.observe(container)
 
         const [tableTexture, ballTexture, leftTexture, rightTexture, sparkTexture] = await Promise.all([
-            Assets.load<Texture>(tableUrl),
-            Assets.load<Texture>(ballUrl),
-            Assets.load<Texture>(leftFlipperUrl),
-            Assets.load<Texture>(rightFlipperUrl),
-            Assets.load<Texture>(sparkUrl),
+            Assets.load<Texture>(this.assetUrl('moonmail-table.png')),
+            Assets.load<Texture>(this.assetUrl('mail-ball.png')),
+            Assets.load<Texture>(this.assetUrl('flipper-left.png')),
+            Assets.load<Texture>(this.assetUrl('flipper-right.png')),
+            Assets.load<Texture>(this.assetUrl('mail-spark.png')),
         ])
         for (const texture of [tableTexture, ballTexture, leftTexture, rightTexture, sparkTexture]) {
             texture.source.scaleMode = 'nearest'
@@ -401,7 +403,7 @@ export class MoonmailGame implements GameRuntime {
     }
 
     private serveBall(waiting: boolean): Ball {
-        const texture = Assets.get<Texture>(ballUrl)
+        const texture = Assets.get<Texture>(this.assetUrl('mail-ball.png'))
         const sprite = new Sprite(texture)
         sprite.anchor.set(0.5)
         sprite.position.set(231, 401)
@@ -769,7 +771,7 @@ export class MoonmailGame implements GameRuntime {
     }
 
     private spark(x: number, y: number, tint: number): void {
-        const texture = Assets.get<Texture>(sparkUrl)
+        const texture = Assets.get<Texture>(this.assetUrl('mail-spark.png'))
         const sprite = new Sprite(texture)
         sprite.anchor.set(0.5)
         sprite.position.set(x, y)
