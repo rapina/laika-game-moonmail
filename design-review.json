@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 3,
+  "reviewedAt": "2026-07-27",
+  "sourceHash": "2385f5753814a0448fca5b5e59fe643a1b482722cb7e0ccb81613445ce350fc7",
+  "verdict": "pass",
+  "method": {
+    "build": "locked production arcade build dist-arcade / immutable release 5a1890fdeda42e6885c23f2a0fb7257633eb78a4",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    }
+  },
+  "designConformance": [
+    {
+      "id": "four-state-flow",
+      "designClaim": "The build provides INTRO, TITLE, GAME, and RESULT in order, with restart and title-return paths from the result.",
+      "status": "implemented",
+      "observed": "The production flow harness traversed INTRO → TITLE → GAME → RESULT in order. The two-cut intro, title controls, live game table, result score/job/jackpot summary, Work Again restart, and Title action were present; restart was exercised successfully."
+    },
+    {
+      "id": "pinball-core-loop",
+      "designClaim": "The player launches with a plunger and aims at ramps, lanes, targets, bumpers, and the scoop with two independently controlled flippers.",
+      "status": "implemented",
+      "observed": "The live table exposed a right drag plunger, two flippers, three upper lanes, two ramps, three envelope targets, three bumpers, a center scoop, outlanes, and drains. The flow run reached full plunger pull, released the ball, and activated both flippers simultaneously."
+    },
+    {
+      "id": "plunger-skillshots",
+      "designClaim": "An 8–48px drag produces three strength bands mapped to distinct left, center, and right skill-shot lanes, with live 0–100% feedback.",
+      "status": "implemented",
+      "observed": "The running build displayed the live plunger percentage and reached 100% on full travel. Creator rule tests verified all three strength thresholds map once to distinct lanes and that 48px reaches full power."
+    },
+    {
+      "id": "flippers-nudge-physics",
+      "designClaim": "Independent simultaneous flippers and a short-swipe nudge affect balls under fixed-step circular physics.",
+      "status": "implemented",
+      "observed": "Simultaneous left/right input was accepted in the production flow. The table presented distinct flipper collision surfaces and active ball motion; the build contains the promised pointer, multitouch, keyboard, and nudge control surface without placeholder controls."
+    },
+    {
+      "id": "three-delivery-jobs",
+      "designClaim": "Three 30-second jobs require four alternating ramps, twelve bumper hits, and all three upper lanes followed by the center scoop.",
+      "status": "implemented",
+      "observed": "The live HUD and table exposed the target-bank-to-scoop job path and job progress. Creator rule tests verified alternating-ramp rejection and four-hit completion, twelve combined bumper hits, lane-then-scoop completion, and 30-second expiry reset."
+    },
+    {
+      "id": "guidance-and-flashing",
+      "designClaim": "NEXT/JOB/DAWN continuously identifies the required target and progress, with matching-color table guidance.",
+      "status": "implemented",
+      "observed": "The GAME capture showed ball/job/lock counts plus the Korean NEXT instruction '다음 ▸ 봉투 3개 0/3 ➜ 타임 스쿱' above the table, while the corresponding envelope bank and scoop/ramp devices were color-coded on the playfield."
+    },
+    {
+      "id": "survival-rules",
+      "designClaim": "The game provides three base balls, an eight-second launch save, and a one-use left kickback awarded by the first completed target bank; the right outlane has no kickback.",
+      "status": "implemented",
+      "observed": "The live HUD showed Ball 1/3 and the asymmetric outlane layout. Creator rule tests verified the first completed bank awards exactly one kickback while relighting the scoop; the locked gameplay rules include the eight-second re-serve and single-use left-only kickback behavior."
+    },
+    {
+      "id": "job-lock-progression",
+      "designClaim": "Completing all three jobs opens the left lock; locking two balls releases them with a new ball to start three-ball multiball.",
+      "status": "implemented",
+      "observed": "The live HUD exposed jobs 0/3 and lock 0/2 as persistent progression, and the table included a distinct left lock device. Creator rule tests completed all three job types, verified the lock opens only afterward, and verified the second lock enters three-ball rules."
+    },
+    {
+      "id": "dawn-express-finale",
+      "designClaim": "Three-ball multiball starts with the left jackpot, alternates left/right ramp jackpots three times, then lights the center scoop for a super jackpot and immediate success.",
+      "status": "implemented",
+      "observed": "Creator rule tests verified the left-first alternating jackpot sequence, three jackpot count, super-scoop lighting, and successful super-jackpot result. The result UI separately reports jobs and jackpots as promised."
+    },
+    {
+      "id": "multiball-fallback",
+      "designClaim": "When multiball drains to one ball, normal play resumes while jackpot count and next-ramp state persist; exhausting all three base balls produces failure.",
+      "status": "implemented",
+      "observed": "Creator rules retain jackpot and next-ramp progression when returning from multiball, and the production flow exhausted the base-ball budget to a failure RESULT with score, 0/3 jobs, and 0/3 jackpots."
+    },
+    {
+      "id": "scope-boundaries",
+      "designClaim": "The vertical slice contains one table and excludes campaigns, upgrades, leaderboards, Thing flipper, magnets, extra balls, and other out-of-scope modes.",
+      "status": "implemented",
+      "observed": "INTRO, TITLE, GAME, and RESULT exposed a single Moonmail table and no empty or promised menus for campaign, upgrades, rankings, extra balls, magnets, or additional modes."
+    },
+    {
+      "id": "bilingual-title-controls",
+      "designClaim": "TITLE provides the goal, touch controls, mute, and Korean/English switching with equivalent information.",
+      "status": "implemented",
+      "observed": "The title screen visibly presented the 3 jobs → 2 locks → 3-ball express goal, simultaneous flipper/plunger/nudge instructions, EN language control, and mute control. Translation tests passed full ko/en key parity."
+    },
+    {
+      "id": "pixel-art-presentation",
+      "designClaim": "Gameplay uses a 256×448 SNES-like raster pixel-art table and PNG ball, flipper, and spark sprites in a navy, teal, and amber limited palette with nearest-neighbor scaling.",
+      "status": "implemented",
+      "observed": "The 390×844 production capture showed the full raster pinball table, clearly pixel-clustered flippers, ball, targets, bumpers, ramps, rails, and lunar machinery in the documented limited palette. Viewport verification reported a 1536×2688 canvas buffer, uniform 256:448 aspect, no overflow, and pixel-preserving presentation."
+    },
+    {
+      "id": "audio-presentation",
+      "designClaim": "Interaction-gated synthesized WebAudio provides distinct flipper, bumper, lane, alarm, and multiball cues.",
+      "status": "implemented",
+      "observed": "The production title exposed mute and the arcade manifest declares audio capability; the built runtime uses the documented interaction-gated synthesized cue system and does not depend on an external audio asset in the immutable arcade release."
+    },
+    {
+      "id": "mobile-layout",
+      "designClaim": "The game is a portrait 256×448 design that scales uniformly in a 390×844 mobile viewport.",
+      "status": "implemented",
+      "observed": "The 390×844 standalone and portal checks both passed with a 390×682 game canvas, uniform aspect ratio, all content inside the frame, no page overflow, and no console or page errors."
+    }
+  ],
+  "creatorTests": [
+    {
+      "command": "npm test",
+      "covers": "24 tests across Moonmail rules, plunger bands, kickback, timed jobs, lock/multiball/jackpot progression, bilingual copy, records, and RNG contracts",
+      "status": "pass"
+    },
+    {
+      "command": "npm run verify:flow",
+      "covers": "Production INTRO → TITLE → GAME → RESULT order, simultaneous flippers, full plunger pull/release, visible objective, and result restart",
+      "status": "pass"
+    },
+    {
+      "command": "npm run viewport",
+      "covers": "390×844 standalone and portal geometry plus additional mobile/wide layouts, Korean/English result containment, and runtime errors",
+      "status": "pass"
+    },
+    {
+      "command": "npm run smoke",
+      "covers": "Production mount and console/page error smoke",
+      "status": "pass"
+    }
+  ],
+  "deployable": {
+    "status": "pass",
+    "observed": "npm run build:arcade built the locked source and verified 21 immutable release files (2,479,960 bytes; 308,277 JS gzip bytes) at release 5a1890fdeda42e6885c23f2a0fb7257633eb78a4. Production flow, 390×844 viewport, mount, required assets, restart, and zero console/page errors all passed with sourceHash 2385f5753814a0448fca5b5e59fe643a1b482722cb7e0ccb81613445ce350fc7."
+  },
+  "notes": [
+    "No interactive Browser backend was available in this review environment; the repository's production Playwright flow and viewport harnesses directly exercised the locked build, and their fresh captures were visually inspected at the required viewport."
+  ],
+  "summary": {
+    "ko": "잠긴 프로덕션 빌드는 GDD의 핀볼 핵심 루프, 세 작업, 2볼 락과 3볼 Dawn Express 피날레, 네 상태 흐름, 이중 언어 UI, 래스터 도트 아트를 구현했다. 제작자 테스트 24개와 프로덕션 플로우·390×844 뷰포트·불변 릴리스 검증이 모두 통과했다.",
+    "en": "The locked production build implements the GDD's pinball core loop, three jobs, two-ball lock and three-ball Dawn Express finale, four-state flow, bilingual UI, and raster pixel art. All 24 creator tests plus production flow, 390×844 viewport, and immutable release verification passed."
+  }
+}
